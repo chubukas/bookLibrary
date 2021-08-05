@@ -1,4 +1,4 @@
-const Book = require("./services/books");
+const Book = require("../../controllers/books");
 
 module.exports = {
   books: Book.books,

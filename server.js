@@ -6,6 +6,7 @@ require("dotenv").config();
 const DbConnection = require("./db");
 const typeDefs = require("./graphql/schema");
 const resolvers = require("./graphql/resolvers");
+const protect = require("./middleware/protect");
 
 // create an express instance
 const app = express();
@@ -22,7 +23,13 @@ DbConnection();
 //this is only apprecable if you are using newer version of apolloserver
 (async () => {
   // create an instance of the apollo server
-  const apollosever = new ApolloServer({ typeDefs, resolvers });
+  const apollosever = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => {
+      return { reqUser: protect(req) };
+    },
+  });
 
   // start the apollo server
   await apollosever.start();

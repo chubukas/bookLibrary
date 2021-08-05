@@ -14,7 +14,13 @@ module.exports = gql`
     books: [Book]!
   }
 
-  type signupInput {
+  type response {
+    error: Boolean
+    success: Boolean
+    message: String!
+  }
+
+  input signupInput {
     username: String!
     email: String!
     password: String!
@@ -30,6 +36,7 @@ module.exports = gql`
     addBook(title: String!, author: String!): Book!
     updateBook(id: ID!, title: String!, author: String): Book!
     deleteBook(id: ID!): Boolean!
-    signUp({...signupInput}): String!
+    signUp(inputs: signupInput): response!
+    signIn(UserNameOrEmail: String!, password: String!): String!
   }
 `;
