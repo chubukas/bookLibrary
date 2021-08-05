@@ -4,6 +4,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const DbConnection = require("./db");
+const typeDefs = require("./graphql/schema");
+const resolvers = require("./graphql/resolvers");
 
 // create an express instance
 const app = express();
@@ -15,20 +17,6 @@ app.use(cors());
 
 // connect to database
 DbConnection();
-
-// Graphql schema Query
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
-
-// create a resolver for the query schema
-const resolvers = {
-  Query: {
-    hello: () => "hello world",
-  },
-};
 
 // create apollo server async function
 //this is only apprecable if you are using newer version of apolloserver
