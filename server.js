@@ -30,6 +30,8 @@ const resolvers = {
   },
 };
 
+// create apollo server async function
+//this is only apprecable if you are using newer version of apolloserver
 (async () => {
   // create an instance of the apollo server
   const apollosever = new ApolloServer({ typeDefs, resolvers });
