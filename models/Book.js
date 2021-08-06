@@ -7,8 +7,14 @@ const bookSchema = mongoose.Schema(
       required: [true, "Book title is required"],
     },
     author: {
+      firstname: { type: String },
+      lastname: { type: String },
+      email: { type: String },
+    },
+    addedBy: {
       type: String,
       required: [true, "Book author is required"],
+      ref: "Users",
     },
   },
   { timestamps: true }

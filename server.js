@@ -1,5 +1,5 @@
 const express = require("express"); // include express module to the package
-const { ApolloServer, gql } = require("apollo-server-express"); // include apollo module
+const { ApolloServer } = require("apollo-server-express"); // include apollo module
 const cors = require("cors");
 require("dotenv").config();
 

@@ -9,7 +9,7 @@ module.exports = async (req) => {
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer")
   )
-    token = res.authorization.split(" ")[1];
+    token = req.headers.authorization.split(" ")[1];
 
   if (!token) return false;
 

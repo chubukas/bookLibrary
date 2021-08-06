@@ -25,6 +25,7 @@ const userSchema = new mongoose.Schema(
     avatar: {
       type: String,
     },
+    addedBooks: [{ type: String, ref: "Books" }],
   },
   { timestamps: true }
 );

@@ -1,4 +1,9 @@
 const jwt = require("jsonwebtoken");
+const {
+  UserInputError,
+  ApolloError,
+  AuthenticationError,
+} = require("apollo-server-express");
 
 const User = require("../models/User");
 const validateEmail = require("../utils/validateEmail");
@@ -12,17 +17,18 @@ const signToken = (id) => {
 };
 
 module.exports = {
+  // REGISTER A USER
   signUp: async (
     _,
     { inputs: { username, email, password, comfirmPassword } }
   ) => {
     // validate email
     if (!validateEmail(email))
-      return { error: true, message: "Please use a valid email" };
+      throw new UserInputError("Please use a valid email");
 
+    // check if password matches
     if (password !== comfirmPassword)
-      // check if password matches
-      return { error: true, message: "The passwords does not match" };
+      throw new UserInputError("The passwords does not match");
 
     // sanitaze the username
     const UserName = username.replace(/\s+/g, "").toLowerCase();
@@ -33,9 +39,10 @@ module.exports = {
 
     // check if username and email exist
     if (user && user.username === UserName)
-      return { error: true, message: "Username already exist" };
+      throw new UserInputError("Username already exist");
+
     if (user && user.email === email)
-      return { error: true, message: "Email already exist" };
+      throw new UserInputError("Email already exist");
 
     username = username.replace(/\s+/g, "");
     const avatar = gravatar(email);
@@ -47,12 +54,10 @@ module.exports = {
       avatar,
     });
 
-    return {
-      success: true,
-      message: `${user.username}, your registeration is successful. Thank You!!!`,
-    };
+    return `your registeration is successful. Thank You!!!`;
   },
 
+  // SIGNIN A USER
   signIn: async (_, { UserNameOrEmail, password }) => {
     // sanitaze the username
     const UserNameEmail = UserNameOrEmail.replace(/\s+/g, "").toLowerCase();
@@ -61,11 +66,44 @@ module.exports = {
       $or: [{ username: UserNameEmail }, { email: UserNameEmail }],
     }).select("+password"); // select expiclity password;
 
-    if (!user) return "Sorry you are not registered in this platform";
+    if (!user)
+      throw new UserInputError("Sorry you are not registered in this platform");
 
     if (!(await user.correctPassword(password, user.password)))
-      return "Incorrect password";
+      throw new UserInputError("Incorrect user details");
 
     return signToken(user._id);
+  },
+
+  //GET ALL USERS
+  users: async (_, arges, { reqUser }) => {
+    if (!(await reqUser))
+      throw new AuthenticationError("Please login before you can have access");
+
+    const users = await User.find().populate("addedBooks");
+
+    if (!users.length > 0)
+      throw new ApolloError(
+        "No users yet, Please try again later",
+        "UNAVAILABLE"
+      );
+
+    return users;
+  },
+
+  // GET A USER
+  user: async (_, { id }, { reqUser }) => {
+    if (!(await reqUser))
+      throw new AuthenticationError("Please login before you can have access");
+
+    const user = await User.findById(id).populate("addedBooks");
+
+    if (!user)
+      throw new ApolloError(
+        "User is not available or have been deleted",
+        "UNAVAILABLE"
+      );
+
+    return user;
   },
 };
