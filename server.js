@@ -10,7 +10,7 @@ const protect = require("./middleware/protect");
 
 // create an express instance
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8090;
 
 app.use(express.json());
 
@@ -38,4 +38,4 @@ DbConnection();
   apollosever.applyMiddleware({ app, path: "/api" });
 })();
 
-app.listen(PORT, () => console.log("listening on port 4000"));
+app.listen(PORT, () => console.log(`listening on port ${PORT}`));
